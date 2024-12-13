@@ -3,14 +3,25 @@
     "name": "goalTracking_reactApp",
     "slug": "goalTracking_reactApp",
     "version": "1.0.0",
+    "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos."
+        }
+      ]
+    ],
+    "permissions": ["CAMERA", "MEDIA_LIBRARY"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "black"
     },
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
@@ -18,10 +29,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "package": "com.dikshant_24.goalTracking_reactApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "461569c9-2e44-42bb-a094-98adfbe51fbf"
+      }
     }
   }
 }
