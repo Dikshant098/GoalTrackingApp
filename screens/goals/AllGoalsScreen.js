@@ -1,4 +1,11 @@
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Dimensions,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TouchableOpacity } from "react-native";
@@ -8,6 +15,12 @@ import { Colors } from "../../constants/styles";
 import { useNavigation } from "@react-navigation/native";
 import { deleteGoal, getAllGoals } from "../../store/slice/goalSlice";
 import { ActivityIndicator } from "react-native";
+
+// Scale font and size for responsiveness
+const { width } = Dimensions.get("window");
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const scaleSize = (size) => (width / 375) * size; // scale based on 375 width as a baseline (iPhone 6)
+const scaleFont = (size) => (screenWidth / 375) * size;
 
 const AllGoalsScreen = () => {
   const navigation = useNavigation();
@@ -62,7 +75,6 @@ const AllGoalsScreen = () => {
     await dispatch(getAllGoals()); // Fetch updated list of goals
     setRefreshing(false);
   };
-
 
   const renderGoalItem = ({ item }) => {
     const progressPercentage = parseFloat(
@@ -142,58 +154,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f9f9f9",
-    padding: 10,
-  },
-  header: {
-    width: "100%", // Full width header
-    paddingVertical: 20,
-    backgroundColor: Colors.lightBlueColor,
-    alignItems: "center",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  motivationalQuote: {
-    fontSize: 16,
-    color: "#e0e0e0",
-    marginTop: 8,
-  },
-  contentContainer: {
-    paddingHorizontal: 16, // Padding of 16 for the content below the header
-  },
-  progressOverview: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  overviewText: {
-    marginTop: 5,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  goalContainer: {
-    padding: 5,
+    padding: scaleSize(10),
   },
   headerContainer: {
-    marginBottom: 10,
+    marginBottom: scaleSize(10),
     alignSelf: "center",
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: scaleSize(22),
     fontWeight: "bold",
-    marginVertical: 10,
+    marginVertical: scaleSize(10),
     color: "#333",
   },
   goalList: {
-    marginBottom: 20,
-  },
-  seeAllButton: {
-    fontSize: 16,
-    color: "blue",
-    textDecorationLine: "underline",
+    marginBottom: scaleSize(10),
   },
   goalItem: {
     backgroundColor: "#fff",
@@ -214,66 +188,35 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   progressBarContainer: {
-    height: 10,
+    height: scaleSize(10),
+    width: "100%",
     backgroundColor: "#eee",
-    borderRadius: 5,
+    borderRadius: scaleSize(5),
     overflow: "hidden",
-    marginVertical: 10,
+    marginTop: scaleSize(5),
   },
   progressPercentageText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginVertical: 5,
+    fontSize: scaleFont(14),
+    fontWeight: "500",
+    marginTop: scaleSize(5),
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#4caf50",
+    backgroundColor: Colors.blueColor,
   },
   goalDeadline: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: scaleFont(14),
+    color: Colors.grayColor,
+    marginTop: scaleSize(5),
   },
   goalActions: {
     flexDirection: "row",
     justifyContent: "flex-end",
     marginTop: 10,
   },
-  chart: {
-    marginVertical: 10,
-  },
-  metrics: {
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
-  achievements: {
-    paddingVertical: 20,
-    alignItems: "center",
-  },
-  achievementText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  shareButton: {
-    fontSize: 16,
-    color: "#007bff",
-    marginTop: 10,
-  },
-  addButton: {
-    backgroundColor: "#28a745",
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  addButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
   loaderContainer: {
     flex: 1,
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

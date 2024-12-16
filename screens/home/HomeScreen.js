@@ -7,6 +7,7 @@ import {
   ScrollView,
   Button,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import { FontAwesome5, MaterialIcons, AntDesign } from "@expo/vector-icons";
 import { Colors } from "../../constants/styles";
@@ -15,6 +16,8 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../../store/slice/userSlice";
 import { getAllGoals } from "../../store/slice/goalSlice";
+
+const { width } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -135,65 +138,56 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    paddingHorizontal: "2%",
     backgroundColor: "#f5f5f5",
   },
   welcomeContainer: {
-    adding: 5,
+    marginBottom: "5%",
+    marginTop: "2%",
   },
   welcomeText: {
-    fontSize: 26,
+    fontSize: width * 0.075,
     fontWeight: "bold",
-    marginBottom: 25,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: "5%",
   },
   box: {
     flex: 1,
-    height: 130,
+    height: width * 0.35,
     backgroundColor: "#fff",
     marginHorizontal: 10,
-    borderRadius: 30,
-    // borderWidth: 0.4,
+    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    padding: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 30,
-    shadowOffset: { width: 0, height: 2 },
+    padding: "5%",
     elevation: 8,
   },
   boxTitle: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: "bold",
     color: "black",
-    marginTop: 10,
+    marginTop: "5%",
   },
   boxDescription: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: "black",
-    marginTop: 5,
     textAlign: "center",
+    marginTop: "2%",
   },
   goalTitle: {
-    fontSize: 26,
+    fontSize: width * 0.06,
     fontWeight: "bold",
-    marginBottom: 10,
-    marginTop:10,
+    marginBottom: "3%",
   },
   card: {
-    marginBottom: 10,
+    marginVertical: "5%",
   },
   noUpcomingGoal: {
-    flex: 1,
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
-    textAlign: "center", // Ensure the text is centered
-    fontSize: 18, // You can also adjust font size if needed
-    color: "gray", // Optional: style the text color
+    textAlign: "center",
+    fontSize: width * 0.045,
+    color: "gray",
   },
 });

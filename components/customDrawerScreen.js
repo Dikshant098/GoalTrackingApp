@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Modal,
+  Alert,
 } from "react-native";
 import { Colors, Fonts, Sizes } from "../constants/styles";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -155,7 +156,7 @@ const CustomDrawer = (props) => {
   function drawerOptions() {
     return (
       <View>
-        {drawerOptionSort({
+        {/* {drawerOptionSort({
           icon: (
             <MaterialIcons
               name="av-timer"
@@ -182,7 +183,7 @@ const CustomDrawer = (props) => {
             props.navigation.closeDrawer();
             props.navigation.navigate("Notifications");
           },
-        })}
+        })} */}
         {drawerOptionSort({
           icon: (
             <MaterialIcons
@@ -194,7 +195,11 @@ const CustomDrawer = (props) => {
           option: "About",
           onPress: () => {
             props.navigation.closeDrawer();
-            props.navigation.push("About");
+            Alert.alert(
+           "About Goal Tracker",
+            "Goal Tracker is designed to help you set, track, and achieve your personal goals. Whether you're working towards fitness milestones, career goals, or personal development, our app provides an easy-to-use interface to monitor your progress and stay motivated."
+          );
+            {/* props.navigation.push("About"); */}
           },
         })}
         {drawerOptionSort({
@@ -208,7 +213,11 @@ const CustomDrawer = (props) => {
           option: "Help",
           onPress: () => {
             props.navigation.closeDrawer();
-            props.navigation.push("Help");
+            Alert. alert(
+            "Need Help?",
+            "If you need assistance, you can refer to our FAQs or contact customer support. We're here to help you get the most out of your Goal Tracker experience and ensure you're on the right path to achieving your goals."
+          );
+            {/* props.navigation.push("Help"); */}
           },
         })}
       </View>

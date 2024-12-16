@@ -7,7 +7,6 @@ import {
   View,
   ScrollView,
   Image,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -29,7 +28,7 @@ const RegisterScreen = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const {
     loading: registerLoading,
@@ -37,8 +36,27 @@ const RegisterScreen = () => {
     success,
   } = useSelector((state) => state.auth);
 
+  const validateInputs = () => {
+    const newErrors = {};
+    if (!firstName.trim()) newErrors.firstName = "First Name is required.";
+    if (!lastName.trim()) newErrors.lastName = "Last Name is required.";
+    if (!username.trim()) newErrors.username = "Username is required.";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim() || !emailRegex.test(email))
+      newErrors.email = "Please enter a valid email address.";
+    if (!password.trim() || password.length < 6)
+      newErrors.password =
+        "Password is required and must be at least 6 characters long.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
+
   const handleRegister = () => {
-    setLoading(true);
+    if (!validateInputs()) {
+      return;
+    }
+
     const userData = {
       first_name: firstName,
       last_name: lastName,
@@ -51,15 +69,12 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     if (error) {
-      Alert.alert("Registration Error", error);
+      setErrors({ global: error });
       dispatch(clearError());
-      setLoading(false);
     }
     if (success) {
-      Alert.alert("Registration Successful", "You can now log in.");
-      dispatch(clearSuccess());
       navigation.navigate("Login User");
-      setLoading(false);
+      dispatch(clearSuccess());
     }
   }, [error, success, dispatch, navigation]);
 
@@ -67,11 +82,6 @@ const RegisterScreen = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f4f4" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* <Image
-          source={require("../../assets/logo.png")}
-          style={styles.logoImg}
-          resizeMode="contain"
-        /> */}
         <View style={styles.inputContainer}>
           <Text style={styles.heading}>Create Your Account</Text>
           <Text style={styles.subHeading}>Where Goals Meet Growth</Text>
@@ -81,18 +91,21 @@ const RegisterScreen = () => {
             onChangeText={setFirstName}
             style={styles.input}
           />
+          {errors.firstName && <Text style={styles.errorText}>{errors.firstName}</Text>}
           <TextInput
             placeholder="Enter Last Name"
             value={lastName}
             onChangeText={setLastName}
             style={styles.input}
           />
+          {errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
           <TextInput
             placeholder="Enter Username"
             value={username}
             onChangeText={setUsername}
             style={styles.input}
           />
+          {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
           <TextInput
             placeholder="Enter Email"
             value={email}
@@ -100,6 +113,7 @@ const RegisterScreen = () => {
             style={styles.input}
             keyboardType="email-address"
           />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
           <TextInput
             placeholder="Enter Password"
             value={password}
@@ -107,21 +121,22 @@ const RegisterScreen = () => {
             secureTextEntry
             style={styles.input}
           />
+          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
           <Pressable
             style={styles.button}
             onPress={handleRegister}
-            disabled={registerLoading || loading}
+            disabled={registerLoading}
           >
-            {registerLoading || loading ? (
+            {registerLoading ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Text style={styles.btnText}>Register</Text>
             )}
           </Pressable>
+          {errors.global && <Text style={styles.errorText}>{errors.global}</Text>}
           <View style={styles.loginContainer}>
             <Text style={styles.loginText}>Already have an account? </Text>
-            <Pressable onPress={() => navigation.navigate("Login User")}
-            >
+            <Pressable onPress={() => navigation.navigate("Login User")}>
               <Text style={styles.loginLink}>Log In</Text>
             </Pressable>
           </View>
@@ -142,12 +157,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: 20,
-  },
-  logoImg: {
-    height: 100,
-    width: 100,
-    alignSelf: "center",
-    marginBottom: 30,
   },
   inputContainer: {
     backgroundColor: "#fff",
@@ -175,9 +184,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
     padding: 12,
-    marginBottom: 15,
+    marginBottom: 5,
     borderRadius: 8,
     fontSize: 16,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: "#28a745",

@@ -12,6 +12,7 @@ import {
   Platform,
   RefreshControl,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,13 +26,22 @@ import {
 } from "../../store/slice/goalSlice";
 import { Colors } from "../../constants/styles";
 import { ActivityIndicator } from "react-native";
-import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useIsFocused,
+  useNavigation,
+} from "@react-navigation/native";
 import QuotesHeader from "../../components/QuotesHeader";
 import * as Progress from "react-native-progress";
+
+const { width, height } = Dimensions.get("window");
 
 const GoalsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused(); // Track if the screen is focused
+
+  // Function for calculating responsive font size
+  const scaleFont = (size) => (width / 375) * size;
 
   const [goal, setGoalInput] = useState("");
   const [description, setDescription] = useState("");
@@ -52,10 +62,10 @@ const GoalsScreen = () => {
   const { loading, error, goals } = useSelector((state) => state.goal);
 
   useFocusEffect(
-    useCallback(()=>{
+    useCallback(() => {
       dispatch(getAllGoals());
     }, [dispatch])
-  )
+  );
 
   // console.log("All Goals Data : ", goals?.data);
 
@@ -126,33 +136,49 @@ const GoalsScreen = () => {
   };
 
   const addGoalHandler = async () => {
+    if (!isModalVisible) return; // Skip error handling if modal is not open
+  
     setErrorMessage(null); // Reset error message
-
+  
     const start = new Date(startTime);
     const end = new Date(endTime);
     const timeDifference = (end - start) / (1000 * 60); // Difference in minutes
-
+  
+    // Check if any required field is empty
     if (goal.trim() === "" || description.trim() === "") {
       setErrorMessage("Please fill out all fields.");
       return;
     }
+  
+    // Check if end date is earlier than start date
     if (new Date(endDate) < new Date(startDate)) {
       setErrorMessage("End date cannot be earlier than the start date.");
       return;
     }
-    if (timeDifference < 30) {
-      setErrorMessage(
-        "End time must be at least 30 minutes greater than start time."
-      );
+  
+    // Check if the selected start or end date is in the past
+    const currentDate = new Date();
+    if (new Date(startDate) < currentDate) {
+      setErrorMessage("Start date cannot be in the past.");
       return;
     }
-
+    if (new Date(endDate) < currentDate) {
+      setErrorMessage("End date cannot be in the past.");
+      return;
+    }
+  
+    // Check if end time is at least 30 minutes greater than start time
+    if (timeDifference < 30) {
+      setErrorMessage("End time must be at least 30 minutes greater than start time.");
+      return;
+    }
+  
     const formatTime = (date) => {
       return date
         .toLocaleTimeString("en-US", { hour12: false }) // Convert to 24-hour format
         .split(" ")[0]; // Strip unnecessary timezone or AM/PM
     };
-
+  
     const goalData = {
       title: goal,
       description,
@@ -161,7 +187,7 @@ const GoalsScreen = () => {
       start_time: formatTime(startTime), // Format to HH:MM:SS
       end_time: formatTime(endTime), // Format to HH:MM:SS
     };
-
+  
     dispatch(setGoal(goalData))
       .unwrap()
       .then(() => {
@@ -173,7 +199,10 @@ const GoalsScreen = () => {
       .catch((err) => {
         Alert.alert("Error", err);
       });
+
+      setErrorMessage(null);
   };
+  
 
   const searchHandler = (text) => {
     setSearchText(text);
@@ -201,35 +230,47 @@ const GoalsScreen = () => {
   }, [searchText, goals]);
 
   const updateGoalHandler = async () => {
+    if (!isModalVisible) return; // Skip error handling if modal is not open
+  
     setErrorMessage(null); // Reset error message
-
+  
     const start = new Date(startTime);
     const end = new Date(endTime);
     const timeDifference = (end - start) / (1000 * 60); // Difference in minutes
-
+  
     if (goal.trim() === "" || description.trim() === "") {
       setErrorMessage("Please fill out all fields.");
       return;
     }
+  
     if (new Date(endDate) <= new Date(startDate)) {
       setErrorMessage("End date cannot be earlier than the start date.");
       return;
     }
-    if (timeDifference < 30) {
-      setErrorMessage(
-        "End time must be at least 30 minutes greater than start time."
-      );
+  
+    // Check if the selected start or end date is in the past
+    const currentDate = new Date();
+    if (new Date(startDate) < currentDate) {
+      setErrorMessage("Start date cannot be in the past.");
       return;
     }
-
+    if (new Date(endDate) < currentDate) {
+      setErrorMessage("End date cannot be in the past.");
+      return;
+    }
+  
+    if (timeDifference < 30) {
+      setErrorMessage("End time must be at least 30 minutes greater than start time.");
+      return;
+    }
+  
     const formatTime = (date) => {
       return date
         .toLocaleTimeString("en-US", { hour12: false }) // Convert to 24-hour format
         .split(" ")[0]; // Strip unnecessary timezone or AM/PM
     };
-
+  
     const goalId = currentGoalId;
-    // console.log("current Goal Id : ", currentGoalId);
     const goalData = {
       goal_title: goal,
       goal_description: description,
@@ -238,11 +279,11 @@ const GoalsScreen = () => {
       start_time: formatTime(startTime), // Format to HH:MM:SS
       end_time: formatTime(endTime), // Format to HH:MM:SS
     };
-
+  
     dispatch(updateGoal({ goalId, goalData }));
     closeModal();
     refreshGoals();
-    setErrorMessage(null); // Reset error message
+    setErrorMessage(""); // Reset error message
   };
 
   const deleteGoalHandler = async (goalId) => {
@@ -291,7 +332,7 @@ const GoalsScreen = () => {
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.whiteColor }}>
       <View style={styles.container}>
         {/* {header()} */}
-        <QuotesHeader title="Your Personal Goals"/>
+        <QuotesHeader title="Your Goals" />
         <View style={styles.contentContainer}>
           {searchGoals()}
           {actionButtonToAddGoal()}
@@ -319,7 +360,7 @@ const GoalsScreen = () => {
         <View style={styles.searchContainer}>
           <Ionicons
             name="search"
-            size={24}
+            size={scaleFont(20)}
             color="#ccc"
             style={styles.searchIcon}
           />
@@ -351,7 +392,7 @@ const GoalsScreen = () => {
           setModalVisible(true);
         }}
       >
-        <Ionicons name="add" size={25} color="white" />
+        <Ionicons name="add" size={scaleFont(25)} color="white" />
       </TouchableOpacity>
     );
   }
@@ -397,20 +438,20 @@ const GoalsScreen = () => {
                 return { text: "Failed", color: Colors.redColor };
               }
               // Same day but not completed yet and end time hasn't passed
-              return { text: "Pending", color: 'purple' };
+              return { text: "Pending", color: "purple" };
             }
 
             const isExpired = endDate < currentDate;
 
             if (isNaN(progress)) {
               // Default to "Pending" if progress is invalid or not a number
-              return { text: "Pending", color: 'purple' };
+              return { text: "Pending", color: "purple" };
             }
 
             if (progress === 0) {
               return isExpired
                 ? { text: "Failed", color: Colors.redColor } // Expired with no progress
-                : { text: "Pending", color: 'purple' }; // No progress made
+                : { text: "Pending", color: "purple" }; // No progress made
             }
 
             if (progress > 0 && progress < 100) {
@@ -424,7 +465,7 @@ const GoalsScreen = () => {
             // Additional safeguard to prevent "Unknown" status
             return isExpired
               ? { text: "Failed", color: Colors.redColor }
-              : { text: "Pending", color: 'purple' };
+              : { text: "Pending", color: "purple" };
           };
 
           const status = getStatusStyle();
@@ -468,7 +509,7 @@ const GoalsScreen = () => {
                       <View style={styles.rowWithIcon}>
                         <Ionicons
                           name="calendar-outline"
-                          size={20}
+                          size={scaleFont(20)}
                           color="#666"
                         />
                         <Text style={styles.heading}>Start Date</Text>
@@ -481,7 +522,7 @@ const GoalsScreen = () => {
                       <View style={styles.rowWithIcon}>
                         <Ionicons
                           name="calendar-outline"
-                          size={20}
+                          size={scaleFont(20)}
                           color="#666"
                         />
                         <Text style={styles.heading}>End Date</Text>
@@ -496,7 +537,11 @@ const GoalsScreen = () => {
                   <View style={styles.rowContainer}>
                     <View style={styles.columnContainer}>
                       <View style={styles.rowWithIcon}>
-                        <Ionicons name="time-outline" size={20} color="#666" />
+                        <Ionicons
+                          name="time-outline"
+                          size={scaleFont(20)}
+                          color="#666"
+                        />
                         <Text style={styles.heading}>Start Time</Text>
                       </View>
                       <Text style={styles.value}>
@@ -505,7 +550,11 @@ const GoalsScreen = () => {
                     </View>
                     <View style={styles.columnContainer}>
                       <View style={styles.rowWithIcon}>
-                        <Ionicons name="time-outline" size={20} color="#666" />
+                        <Ionicons
+                          name="time-outline"
+                          size={scaleFont(20)}
+                          color="#666"
+                        />
                         <Text style={styles.heading}>End Time</Text>
                       </View>
                       <Text style={styles.value}>
@@ -518,10 +567,18 @@ const GoalsScreen = () => {
 
               <View style={styles.iconContainer}>
                 <TouchableOpacity onPress={() => openModal(item)}>
-                  <Ionicons name="create-outline" size={26} color="blue" />
+                  <Ionicons
+                    name="create-outline"
+                    size={scaleFont(26)}
+                    color="blue"
+                  />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteGoalHandler(item.id)}>
-                  <Ionicons name="trash-outline" size={26} color="#ff5252" />
+                  <Ionicons
+                    name="trash-outline"
+                    size={scaleFont(26)}
+                    color="#ff5252"
+                  />
                 </TouchableOpacity>
               </View>
             </View>
@@ -540,6 +597,7 @@ const GoalsScreen = () => {
   }
 
   function addNewGoal() {
+    
     return (
       <Modal visible={isModalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
@@ -568,7 +626,11 @@ const GoalsScreen = () => {
                   setShowPicker({ type: "startDate", visible: true })
                 }
               >
-                <Ionicons name="calendar-outline" size={20} color="#666" />
+                <Ionicons
+                  name="calendar-outline"
+                  size={scaleFont(20)}
+                  color="#666"
+                />
                 <Text style={styles.dateText}>
                   {" "}
                   {`Start Date: ${formatDate(startDate)}`}
@@ -580,7 +642,11 @@ const GoalsScreen = () => {
                   setShowPicker({ type: "endDate", visible: true })
                 }
               >
-                <Ionicons name="calendar-outline" size={20} color="#666" />
+                <Ionicons
+                  name="calendar-outline"
+                  size={scaleFont(20)}
+                  color="#666"
+                />
                 <Text style={styles.dateText}>{`End Date: ${formatDate(
                   endDate
                 )}`}</Text>
@@ -591,7 +657,11 @@ const GoalsScreen = () => {
                   setShowPicker({ type: "startTime", visible: true })
                 }
               >
-                <Ionicons name="time-outline" size={20} color="#666" />
+                <Ionicons
+                  name="time-outline"
+                  size={scaleFont(20)}
+                  color="#666"
+                />
                 <Text
                   style={styles.dateText}
                 >{`Start Time: ${startTime.toLocaleTimeString()}`}</Text>
@@ -602,7 +672,11 @@ const GoalsScreen = () => {
                   setShowPicker({ type: "endTime", visible: true })
                 }
               >
-                <Ionicons name="time-outline" size={20} color="#666" />
+                <Ionicons
+                  name="time-outline"
+                  size={scaleFont(20)}
+                  color="#666"
+                />
                 <Text
                   style={styles.dateText}
                 >{`End Time: ${endTime.toLocaleTimeString()}`}</Text>
@@ -663,27 +737,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
   },
   contentContainer: {
-    paddingHorizontal: 16,
     flex: 1,
-  },
-  header: {
-    width: "100%",
-    paddingVertical: 20,
-    backgroundColor: Colors.lightBlueColor,
-    alignItems: "center",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    marginBottom: 15,
-  },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: "#e0e0e0",
-    marginTop: 8,
+    paddingHorizontal: width * 0.04, // 5% of screen width
   },
   searchContainer: {
     flexDirection: "row",
@@ -703,16 +758,18 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flex: 1,
-    height: 40,
+    height: height * 0.05, // 6% of screen height
+    borderRadius: 8,
+    paddingHorizontal: width * 0.04, // 4% of screen width
   },
   addButton: {
     position: "absolute",
-    bottom: 10, // Gives some space from the bottom
+    bottom: height * 0.02,
     alignSelf: "center", // Centers the button horizontally
     backgroundColor: Colors.blueColor,
     borderRadius: 50,
-    width: 55, // Slightly larger button for better visibility
-    height: 55,
+    width: width * 0.15, // 15% of screen width
+    height: width * 0.15,
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10, // Ensures it is above other elements
@@ -727,8 +784,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderColor: "black",
     borderWidth: 0.2,
-    padding: 15,
-    marginBottom: 8,
+    marginBottom: height * 0.02, // 2% of screen height
+    padding: width * 0.04,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,

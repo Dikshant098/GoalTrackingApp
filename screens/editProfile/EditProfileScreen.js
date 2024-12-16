@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../../constants/styles";
@@ -20,6 +21,11 @@ import { Picker } from "@react-native-picker/picker";
 import { useDispatch, useSelector } from "react-redux";
 import { ImageURL } from "../../utils/common";
 import { updateUser } from "../../store/slice/userSlice";
+
+// Get screen dimensions for responsiveness
+const { width, height } = Dimensions.get("window");
+
+const scale = (size) => (width / 375) * size; // 375 is the base screen width for scaling
 
 const EditProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -360,7 +366,7 @@ const styles = StyleSheet.create({
   },
   profilePicContainer: {
     alignItems: "center",
-    marginVertical: 20,
+    marginBottom: scale(20)
   },
   profilePic: {
     width: 125,
@@ -373,23 +379,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
-    marginTop: 10,
-    paddingHorizontal: 20,
+    marginTop: scale(10),
   },
   changePicButton: {
     flex: 1,
     alignItems: "center",
-    paddingVertical: 10,
+    padding: scale(5),
     marginHorizontal: 5,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
   },
   changePicText: {
     color: Colors.primaryColor,
-    fontSize: 16,
+    fontSize: scale(16),
   },
   editFormContainer: {
-    marginTop: 5,
+    marginHorizontal: scale(5),
   },
   nameContainer: {
     flexDirection: "row", // Align items side by side
@@ -402,9 +407,9 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: scale(16),
     color: Colors.blackColor,
-    marginBottom: 8,
+    marginBottom: scale(5),
   },
   textInput: {
     borderWidth: 1,
@@ -441,9 +446,9 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: Colors.buttonColor,
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
+    paddingVertical: scale(12),
+    paddingHorizontal: scale(35),
+    borderRadius: scale(25),
     justifyContent: "center",
     alignItems: "center",
     elevation: 3,
@@ -456,7 +461,7 @@ const styles = StyleSheet.create({
   },
   saveBtnText: {
     color: Colors.whiteColor,
-    fontSize: 16,
+    fontSize: scale(14),
     fontWeight: "bold",
   },
 });

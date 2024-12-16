@@ -19,7 +19,13 @@ import QuotesHeader from "../../components/QuotesHeader";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteGoal, getAllGoals } from "../../store/slice/goalSlice";
 
-const screenWidth = Dimensions.get("window").width;
+// Use Dimensions API for responsiveness
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
+
+// Scale function to adjust font sizes based on screen width
+const scaleFont = (size) => (screenWidth / 375) * size;
+const scaleSize = (size) => (width / 375) * size; // You can adjust the base value (375) if needed
 
 const StatisticsScreen = () => {
   const navigation = useNavigation();
@@ -30,13 +36,11 @@ const StatisticsScreen = () => {
 
   const [refreshing, setRefreshing] = useState(false);
 
-
   useFocusEffect(
-    useCallback(()=>{
+    useCallback(() => {
       dispatch(getAllGoals());
     }, [dispatch])
-  )
-
+  );
 
   // console.log("Goals : ", goals);
 
@@ -184,8 +188,8 @@ const StatisticsScreen = () => {
       <View style={styles.progressOverview}>
         <PieChart
           data={pieData}
-          width={screenWidth - 32} // Adjust the width as needed
-          height={220} // Adjust the height as needed
+          width={screenWidth - 30} // Adjust the width as needed
+          height={200} // Adjust the height as needed
           chartConfig={{
             backgroundColor: "#ffffff",
             backgroundGradientFrom: "#ffffff",
@@ -342,6 +346,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f9f9f9",
   },
+  contentContainer: {
+    paddingHorizontal: scaleSize(12),
+  },
   header: {
     width: "100%", // Full width header
     paddingVertical: 20,
@@ -360,39 +367,36 @@ const styles = StyleSheet.create({
     color: "#e0e0e0",
     marginTop: 8,
   },
-  contentContainer: {
-    paddingHorizontal: 16, // Padding of 16 for the content below the header
-  },
   progressOverview: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: scaleSize(20),
   },
   overviewText: {
-    marginTop: 5,
-    fontSize: 18,
+    marginTop: scaleSize(5),
+    fontSize: scaleFont(17),
     fontWeight: "bold",
   },
   goalContainer: {
-    padding: 5,
+    padding: scaleSize(5),
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: scaleSize(8),
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: scaleFont(22),
     fontWeight: "bold",
     marginVertical: 10,
     color: "#333",
   },
   goalList: {
-    marginBottom: 20,
+    paddingBottom: scaleSize(10),
   },
   seeAllButton: {
     fontSize: 16,
-    color: "black",
+    color: Colors.blueColor,
     textDecorationLine: "none",
     fontWeight: "bold",
   },
@@ -415,25 +419,26 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   progressBarContainer: {
-    height: 10,
+    height: scaleSize(10),
+    width: "100%",
     backgroundColor: "#eee",
-    borderRadius: 5,
+    borderRadius: scaleSize(5),
     overflow: "hidden",
-    marginVertical: 10,
+    marginTop: scaleSize(5),
   },
   progressPercentageText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginVertical: 5,
+    fontSize: scaleFont(14),
+    fontWeight: "500",
+    marginTop: scaleSize(5),
   },
   progressBar: {
     height: "100%",
-    backgroundColor: "#4caf50",
+    backgroundColor: Colors.blueColor,
   },
   goalDeadline: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: scaleFont(14),
+    color: Colors.grayColor,
+    marginTop: scaleSize(5),
   },
   goalActions: {
     flexDirection: "row",
@@ -448,11 +453,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   achievementContainer: {
-    padding: 5,
+    marginTop: scaleSize(10),
+    paddingHorizontal: scaleSize(15),
   },
   achievements: {
     paddingVertical: 20,
     alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#fff",
     borderRadius: 20,
     borderColor: "black",
@@ -466,13 +473,13 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   achievementText: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: scaleFont(18),
+    fontWeight: "500",
   },
   shareButton: {
-    fontSize: 16,
-    color: "#007bff",
-    marginTop: 10,
+    marginTop: scaleSize(10),
+    fontSize: scaleFont(16),
+    color: Colors.blueColor,
   },
   addButton: {
     backgroundColor: "#28a745",

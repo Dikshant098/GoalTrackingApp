@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
+  Dimensions,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "../../constants/styles";
@@ -12,6 +13,8 @@ import UserInfo from "../../components/UserInfo";
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import { getUser } from "../../store/slice/userSlice";
+
+const { width, height } = Dimensions.get("window");
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -146,12 +149,12 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: width * 0.045, // Dynamic font size based on screen width
     color: Colors.blackColor,
     marginBottom: 5,
   },
   infoText: {
-    fontSize: 16,
+    fontSize: width * 0.04, // Dynamic font size based on screen width
     color: Colors.textColor,
     paddingVertical: 5,
     backgroundColor: Colors.whiteColor,
@@ -168,17 +171,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   editProfileBtn: {
-    backgroundColor: Colors.buttonColor,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+     backgroundColor: Colors.buttonColor,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 25,
-    width: 150,
+    width: width * 0.35, // Dynamic width based on screen width
     justifyContent: "center",
     alignItems: "center",
   },
   editProfileBtnText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: width * 0.040, 
   },
 });

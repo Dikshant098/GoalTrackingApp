@@ -9,18 +9,27 @@ import {
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { Colors } from "../constants/styles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const { width: screenWidth } = Dimensions.get("window"); // Get screen width
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window"); // Get screen dimensions
 
 const motivationalQuotes = [
   "Stay consistent, stay motivated.",
-  "The only way to do great work is to love what you do.",
-  "Success is the sum of small efforts, repeated day in and day out.",
   "Your limitation—it’s only your imagination.",
   "Dream it. Wish it. Do it.",
+  "You are your only limit.",
+  "Be stronger than your excuses.",
+  "Success is a journey, not a destination.",
+  "Focus on the process, not the outcome.",
 ];
 
-const QuotesHeader = ({title}) => {
+// Responsive font scaling
+const responsiveFontSize = (size) => {
+  const scale = screenWidth / 375; // 375 is the base screen width for scaling
+  return Math.round(size * scale);
+};
+
+const QuotesHeader = ({ title }) => {
   const scrollViewRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity value
@@ -54,12 +63,12 @@ const QuotesHeader = ({title}) => {
   }, [currentIndex, fadeAnim]);
 
   return (
-    <View style={styles.header}>
+    <SafeAreaView style={styles.header}>
       <Text style={styles.headerTitle}>{title}</Text>
       <Animated.Text style={[styles.headerSubtitle, { opacity: fadeAnim }]}>
         {motivationalQuotes[currentIndex]}
       </Animated.Text>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -68,29 +77,26 @@ export default QuotesHeader;
 const styles = StyleSheet.create({
   header: {
     width: "100%",
-    paddingVertical: 12,
+    paddingVertical: screenHeight * 0.02, // Responsive padding
     backgroundColor: Colors.lightBlueColor,
     alignItems: "center",
-    borderTopRightRadius: 50,
-    borderTopLeftRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
-    marginBottom: 10,
-    height: "14%",
+    justifyContent: "center",
+    borderRadius: 50,
+    marginBottom: screenHeight * 0.02, // Responsive margin
+    alignSelf: "center",
     marginTop: 1,
   },
   headerTitle: {
-    fontSize: 25,
+    fontSize: responsiveFontSize(24), // Scaled font size
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 5,
+    marginBottom: screenHeight * 0.01,
   },
   headerSubtitle: {
-    fontSize: 19,
+    fontSize: responsiveFontSize(20), // Scaled font size
     color: "#F7EF8A",
     textAlign: "center",
-    paddingHorizontal: 20,
-    marginBottom: 5,
+    paddingHorizontal: "7%", // Percentage for consistent spacing
   },
   quoteContainer: {
     width: screenWidth, // Each slide takes up the full width of the screen

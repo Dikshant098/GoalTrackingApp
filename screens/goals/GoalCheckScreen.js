@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from "react-native";
 import Checkbox from "expo-checkbox"; // Install with `expo install expo-checkbox`
 import { Colors } from "../../constants/styles";
@@ -15,6 +16,9 @@ import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { updateProgress } from "../../store/slice/progressSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Get device dimensions
+const { width, height } = Dimensions.get("window");
 
 const GoalCheckScreen = ({ navigation, route }) => {
   const { goal } = route.params;
@@ -124,8 +128,8 @@ const GoalCheckScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.whiteColor }}>
+      {goalDetail()}
       <View style={styles.container}>
-        {goalDetail()}
         {goalTime()}
         {goalCheckBox()}
         {/* {goBackButton()} */}
@@ -248,74 +252,71 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f0f0f0",
+    paddingHorizontal: width * 0.02,
   },
   goalDetail: {
     width: "100%",
     justifyContent: "center",
     backgroundColor: Colors.lightBlueColor,
     alignItems: "center",
-    borderTopRightRadius: 50,
-    borderTopLeftRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
-    marginBottom: 10,
-    height: "11%",
+    borderRadius: 50,
+    marginBottom: height * 0.01,
+    height: height * 0.12,
     marginTop: 1,
   },
   goalTitle: {
-    fontSize: 25,
+    fontSize: width * 0.07,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 5,
+    marginBottom: height * 0.005,
   },
   goalDescription: {
-    fontSize: 19,
+    fontSize: width * 0.05,
     color: "#F7EF8A",
     textAlign: "center",
-    paddingHorizontal: 20,
-    marginBottom: 5,
+    paddingHorizontal: width * 0.05,
   },
   timeContainer: {
-    flexDirection: "row", // Align icon and text in a row
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    flexDirection: "row",
+    paddingVertical: height * 0.01,
+    paddingHorizontal: width * 0.05,
     backgroundColor: "#fff",
-    borderRadius: 10,
-    marginHorizontal: 10,
-    marginTop: 5,
-    alignItems: "center", // Center align vertically
+    borderRadius: width * 0.03,
+    marginHorizontal: width * 0.02,
+    marginTop: height * 0.01,
+    alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 5, // Adds shadow for Android
+    elevation: 5,
   },
   timeText: {
-    marginLeft: 10, // Space between icon and text
-    fontSize: 16,
+    marginLeft: width * 0.03,
+    fontSize: width * 0.045,
     fontWeight: "bold",
     color: Colors.blueColor,
   },
 
   listContainer: {
     flex: 1,
-    padding: 10,
+    padding: width * 0.03,
     backgroundColor: "#fff",
-    borderRadius: 10,
-    marginHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 80,
+    borderRadius: width * 0.03,
+    marginHorizontal: width * 0.02,
+    marginTop: height * 0.01,
+    marginBottom: height * 0.1,
   },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "#ddd",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginBottom: 5,
+    paddingVertical: height * 0.01,
+    paddingHorizontal: width * 0.03,
+    borderRadius: width * 0.02,
+    marginBottom: height * 0.005,
   },
   headerIndex: {
     flex: 1,

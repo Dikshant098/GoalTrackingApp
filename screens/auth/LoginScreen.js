@@ -6,8 +6,6 @@ import {
   Text,
   View,
   ScrollView,
-  Image,
-  Alert,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -22,27 +20,54 @@ const LoginScreen = () => {
 
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { loading, error, success } = useSelector((state) => state.auth);
-  const { user } = useSelector((state) => state.user);
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
-  const handleLogin = () => {
-    if (!emailOrUsername || !password) {
-      Alert.alert("Validation Error", "Please fill in all fields.");
-      return;
+  const { loading, error, success } = useSelector((state) => state.auth);
+
+  const handleLogin = async () => {
+    let hasError = false;
+
+    // Validate input fields
+    if (!emailOrUsername) {
+      setEmailError("Email or username is required.");
+      hasError = true;
     }
-    const userData = { login: emailOrUsername, password }; // Use email or username
-    dispatch(loginUser(userData));
+    if (!password) {
+      setPasswordError("Password is required.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const userData = { login: emailOrUsername, password };
+
+    try {
+      await dispatch(loginUser(userData)).unwrap();
+    } catch (err) {
+      // Handle server-side errors
+      if (err.errors) {
+        if (err.errors.login) setEmailError(err.errors.login[0]);
+        if (err.errors.password) setPasswordError(err.errors.password[0]);
+      } else if (err.message) {
+        setEmailError(err.message);
+      }
+    }
   };
 
   useEffect(() => {
+    // Handle global errors from the Redux state
     if (error) {
-      Alert.alert("Login Error", error);
+      if (error.includes("email") || error.includes("username")) {
+        setEmailError(error);
+      } else if (error.includes("password")) {
+        setPasswordError(error);
+      }
       dispatch(clearError());
     }
+
     if (success) {
-      // Otherwise, navigate to Home screen
-      // Alert.alert("Login Successful", "Welcome back!");
-      // navigation.navigate("Home Screen");
+      navigation.navigate("HHomeScreen");
     }
   }, [error, success, dispatch, navigation]);
 
@@ -50,27 +75,36 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f4f4" />
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* <Image
-          source={require("../../assets/icon.png")}
-          style={styles.logoImg}
-          resizeMode="contain"
-        /> */}
         <View style={styles.inputContainer}>
           <Text style={styles.heading}>Welcome Back!</Text>
           <Text style={styles.subHeading}>Login to your account</Text>
+
+          {/* Email/Username Field */}
           <TextInput
             placeholder="Enter Email or Username"
             value={emailOrUsername}
-            onChangeText={setEmailOrUsername}
-            style={styles.input}
+            onChangeText={(value) => {
+              setEmailOrUsername(value);
+              setEmailError(""); // Clear error on input change
+            }}
+            style={[styles.input, emailError ? styles.inputError : null]}
           />
+          {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+
+          {/* Password Field */}
           <TextInput
             placeholder="Enter Password"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(value) => {
+              setPassword(value);
+              setPasswordError(""); // Clear error on input change
+            }}
             secureTextEntry
-            style={styles.input}
+            style={[styles.input, passwordError ? styles.inputError : null]}
           />
+          {passwordError && <Text style={styles.errorText}>{passwordError}</Text>}
+
+          {/* Login Button */}
           <Pressable
             style={styles.button}
             onPress={handleLogin}
@@ -82,16 +116,10 @@ const LoginScreen = () => {
               <Text style={styles.btnText}>Login</Text>
             )}
           </Pressable>
-          {/* <Pressable
-            style={styles.forgotPasswordButton}
-            onPress={() => navigation.navigate("Forgot Password")}
-          >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </Pressable> */}
+
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Don't have an account? </Text>
-            <Pressable onPress={() => navigation.navigate("Register User")}
-            >
+            <Pressable onPress={() => navigation.navigate("Register User")}>
               <Text style={styles.registerLink}>Register</Text>
             </Pressable>
           </View>
@@ -112,12 +140,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: 20,
-  },
-  logoImg: {
-    height: 100,
-    width: 100,
-    alignSelf: "center",
-    marginBottom: 30,
   },
   inputContainer: {
     backgroundColor: "#fff",
@@ -149,6 +171,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
   },
+  inputError: {
+    borderColor: "red",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    fontSize: 14,
+  },
   button: {
     backgroundColor: "#007bff",
     padding: 15,
@@ -160,15 +190,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
-  },
-  forgotPasswordButton: {
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: "#007bff",
-    textDecorationLine: "underline",
   },
   registerContainer: {
     flexDirection: "row",

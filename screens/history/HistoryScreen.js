@@ -6,11 +6,14 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGoals } from "../../store/slice/goalSlice";
 import { ActivityIndicator } from "react-native";
 import { Colors } from "../../constants/styles";
+
+const { width, height } = Dimensions.get("window");
 
 const HistoryScreen = () => {
   const dispatch = useDispatch();
@@ -111,20 +114,21 @@ export default HistoryScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+   flex: 1,
     backgroundColor: "#F5F5F5",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: "5%", // Relative padding
+    paddingVertical: "2%",
   },
   headerText: {
-    fontSize: 24,
+    fontSize: width * 0.06, // Scale font size
     fontWeight: "bold",
     color: "#333",
-    marginVertical: 10,
+    marginVertical: height * 0.01,
     textAlign: "center",
+    marginBottom:'5%',
   },
   listContent: {
-    paddingBottom: 80,
+    paddingBottom: height * 0.1, // Add dynamic padding
   },
   goalCard: {
     flexDirection: "row",
@@ -132,8 +136,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFF",
     borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
+    padding: width * 0.04, // Scale padding
+    marginBottom: height * 0.015, // Scale margin
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -151,17 +155,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   goalTitle: {
-    fontSize: 18,
+    fontSize: width * 0.045, // Scale font size
     fontWeight: "bold",
     color: "#333",
   },
   goalDate: {
-    fontSize: 14,
+    fontSize: width * 0.035, // Scale font size
     color: "#777",
-    marginTop: 5,
+    marginTop: height * 0.005,
   },
   goalStatus: {
-    fontSize: 14,
+    fontSize: width * 0.04,
     fontWeight: "bold",
     color: "#555",
   },
@@ -186,10 +190,10 @@ const styles = StyleSheet.create({
     alignItems: "center", // Center horizontally
   },
   noDataText: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: "bold",
     color: "#888",
     textAlign: "center",
-    marginTop: 50,
+    marginTop: height * 0.1,
   },
 });

@@ -1,12 +1,13 @@
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback } from "react";
-import { StyleSheet, Text, View, Dimensions, FlatList, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, Dimensions, FlatList, ActivityIndicator, useWindowDimensions } from "react-native";
 import { ProgressChart } from "react-native-chart-kit";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllGoals } from "../../store/slice/goalSlice";
 import { Colors } from "../../constants/styles";
 
 const screenWidth = Dimensions.get("window").width;
+const { width } = Dimensions.get("window");
 
 const TrackYourGoalScreen = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,24 @@ const TrackYourGoalScreen = () => {
       dispatch(getAllGoals());
     }, [dispatch])
   );
+
+
+    // Function to format the date to DD/MM/YYYY
+    const formatDate = (date) => {
+      if (!(date instanceof Date)) {
+        date = new Date(date); // Ensure date is a Date object
+      }
+      if (isNaN(date)) {
+        // console.error("Invalid date:", date);
+        return "Invalid Date";
+      }
+  
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+      const year = date.getFullYear();
+  
+      return `${day}/${month}/${year}`;
+    };
 
   const renderGoal = ({ item }) => {
     // Get progress percentage, default to 0 if no progress
@@ -50,7 +69,7 @@ const TrackYourGoalScreen = () => {
         </Text>
         <Text style={styles.description}>{item.description}</Text>
         <Text style={styles.dates}>
-          {item.start_date} to {item.end_date}
+          {formatDate(item.start_date)} to {formatDate(item.end_date)}
         </Text>
       </View>
     );
@@ -84,24 +103,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: "5%", // Relative padding
+    paddingVertical: "2%",
   },
   headerText: {
-    fontSize: 24,
     fontWeight: "bold",
     color: "#333",
     marginVertical: 10,
-    textAlign:'center'
+    textAlign: "center",
+    fontSize: width * 0.06,
   },
   listContent: {
-    paddingBottom: 80,
+    paddingBottom: "10%", // Adjust based on screen height
   },
   goalCard: {
     backgroundColor: "#fff",
     borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+    padding: "5%",
+    marginBottom: "4%",
     shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowRadius: 5,
@@ -110,37 +129,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   goalTitle: {
-    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    // marginBottom: 8,
+    textAlign: "center",
+    marginBottom: "2%",
   },
   progressText: {
-    fontSize: 14,
     color: "#555",
-    // marginTop: 10,
+    marginTop: "2%",
   },
   description: {
-    fontSize: 14,
     color: "#777",
     textAlign: "center",
-    marginTop: 8,
+    marginTop: "2%",
   },
   dates: {
-    fontSize: 12,
     color: "#999",
-    marginTop: 5,
+    marginTop: "1%",
   },
   loaderContainer: {
     flex: 1,
-    justifyContent: "center", // Center vertically
-    alignItems: "center", // Center horizontally
+    justifyContent: "center",
+    alignItems: "center",
   },
   noDataText: {
-    fontSize: 18,
     fontWeight: "bold",
     color: "#888",
     textAlign: "center",
-    marginTop: 50,
+    marginTop: "10%",
   },
 });

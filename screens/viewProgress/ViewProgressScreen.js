@@ -14,7 +14,8 @@ import { getAllGoals } from "../../store/slice/goalSlice";
 import { ActivityIndicator } from "react-native";
 import { Colors } from "../../constants/styles";
 
-const screenWidth = Dimensions.get("window").width;
+const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const ViewProgressScreen = () => {
   const dispatch = useDispatch();
@@ -144,21 +145,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    alignItems: "center",
+    paddingHorizontal: "5%", // Relative padding
+    paddingVertical: "2%",
   },
   headerText: {
-    fontSize: 24,
     fontWeight: "bold",
     color: "#333",
     marginVertical: 10,
+    textAlign: "center",
+    fontSize: width * 0.06,
   },
   chartContainer: {
     backgroundColor: "#FFF",
     borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
+    padding: screenWidth * 0.05,
+    marginBottom: screenHeight * 0.02,
     alignItems: "center",
     width: "100%",
     shadowColor: "#000",
@@ -169,8 +170,8 @@ const styles = StyleSheet.create({
   lineChartContainer: {
     backgroundColor: "#FFF",
     borderRadius: 8,
-    padding: 15,
-    marginBottom: 20,
+    padding: screenWidth * 0.05,
+    marginBottom: screenHeight * 0.02,
     alignItems: "center",
     width: "100%",
     shadowColor: "#000",
@@ -179,15 +180,15 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   chartTitle: {
-    fontSize: 18,
+    fontSize: screenWidth * 0.05,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 10,
+    marginBottom: screenHeight * 0.01,
   },
   progressText: {
-    fontSize: 16,
+    fontSize: screenWidth * 0.04,
     color: "#555",
-    marginTop: 10,
+    marginTop: screenHeight * 0.01,
   },
   button: {
     position: "absolute",
@@ -197,41 +198,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 30,
   },
-  buttonText: {
-    fontSize: 16,
-    color: "#FFF",
-    fontWeight: "bold",
-  },
-  goalItem: {
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
-  goalTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  goalStatus: {
-    fontSize: 14,
-    color: "#555",
-    marginTop: 5,
-  },
+
   loaderContainer: {
     flex: 1,
     justifyContent: "center", // Center vertically
     alignItems: "center", // Center horizontally
   },
   noDataText: {
-    fontSize: 18,
+    fontSize: screenWidth * 0.05,
     fontWeight: "bold",
     color: "#888",
     textAlign: "center",
-    marginTop: 50,
+    marginTop: screenHeight * 0.1,
   },
 });
